@@ -13,9 +13,6 @@ def run() -> None:
     The main method that is being launched from src/__main__.py and
     that contains the calls to other methods in the project.
     """
-    # Get the IGE object with info from yahoo finance.
-    log.info("Running trade functions...")
+    # Get the IGE object with info from yahoo finance. And calculate Sharpe.
     sharpe_ratio = sharpe.dummy_sharpe_ratio()
-    
-    log.info("Got the Sharpe ratio of %i...", sharpe_ratio)
-    log.info("End of method...")
+    log.info("The value returned by the function: %f", sharpe_ratio)
