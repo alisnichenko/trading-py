@@ -13,6 +13,9 @@ def run() -> None:
     The main method that is being launched from src/__main__.py and
     that contains the calls to other methods in the project.
     """
+    symbol = "MSFT"
+    start_date = "2001-11-26"
+    end_date = "2007-11-14"
     # Get the IGE object with info from yahoo finance. And calculate Sharpe.
-    sharpe_ratio = sharpe.dummy_sharpe_ratio()
-    log.info("The value returned by the function: %f", sharpe_ratio)
+    ratio = sharpe.trivial_long_term_sharpe(symbol, start_date, end_date)
+    log.info("The value returned by the function: %f", ratio)
