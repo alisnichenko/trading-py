@@ -1,8 +1,7 @@
 """
-This file provides simple illustration of a dummy strategy performed on
-IGE historical data from yahoo finance. It shows basic calculations on the
-period of data as well as serves as a python recreation of the example in
-the book I am currently reading.
+This file contains some methods that merely imitate and duplicate the
+exercises from the book about Quantitative Trading. Sharpe ratios, drawdowns,
+and other simple but important concepts to better understand the content.
 """
 import yfinance as yf
 import numpy as np
@@ -10,7 +9,7 @@ from src.utilities import logger
 
 log = logger.get_logger_config(__name__)
 
-def trivial_long_term_sharpe(symbol: str, start: str, end: str) -> float:
+def long_term_sharpe(symbol: str, start: str, end: str) -> float:
     """
     Calculates Sharpe ration for a trivial long term strategy, when we hold
     the stock symbol from start date and sell it at the end date. Takes into
@@ -25,7 +24,7 @@ def trivial_long_term_sharpe(symbol: str, start: str, end: str) -> float:
     Returns:
         sharpe_ratio: float number indicating the Sharpe ratio.
     """
-    # Ticker object with all the info about IGE stock from yahoo finance.
+    # Ticket object for the stock I am looking for.
     stock_object = yf.Ticker(symbol)
 
     # Get historical data. actions=false doesn't show dividents/splits.
@@ -41,5 +40,8 @@ def trivial_long_term_sharpe(symbol: str, start: str, end: str) -> float:
     mean_ret = np.mean(excess_returns)
     std_ret = np.std(excess_returns)
     sharpe_ratio = np.sqrt(252) * mean_ret / std_ret
-
-    return sharpe_ratio
+    log.info("For {0} from {1} to {2} the Sharpe Ratio is {3}"
+             .format(symbol, start, end, sharpe_ratio))
+    
+    # Calculating cumulative compounded returns
+    # How do I even do it to begin with.
