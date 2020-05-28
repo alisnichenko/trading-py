@@ -43,5 +43,6 @@ def long_term_sharpe(symbol: str, start: str, end: str) -> float:
     log.info("For {0} from {1} to {2} the Sharpe Ratio is {3}"
              .format(symbol, start, end, sharpe_ratio))
     
+    return sharpe_ratio
     # Calculating cumulative compounded returns
     # How do I even do it to begin with.
