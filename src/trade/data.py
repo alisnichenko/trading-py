@@ -1,14 +1,17 @@
 """
-This file will serve as a collection of classes that will
-handler the data of the stocks/markets both for historic
-and live data.
+The following file describes classes that operate the data in multiple
+formats and on different platforms. The methods in these classes
+provide functionality to get the info, update the info, and pass
+the info further down the pipeline later in the process. Testing
+will be completed later. Oopsie.
 """
 from abc import ABC 
+from abc import abstractmethod
 import datetime
 import os, os.path
 import pandas as pd
 
-from src.trade.events import MarketEvent
+from .events import MarketEvent
 
 class DataHandler(ABC):
     """
@@ -18,7 +21,7 @@ class DataHandler(ABC):
     backtest a strategy with little to no modifications to the codebase.
     """
     @abstractmethod
-    def get_latest_bars(self, symbol: str, n_bars = 1) -> None:
+    def get_latest_bars(self, symbol: str, n_bars=1) -> None:
         """Returns the specified number of bars from the symbol list."""
         raise NotImplementedError("Should implement get_latest_bars()")
 
@@ -34,7 +37,7 @@ class DataHandler(ABC):
 class HistoricCSVDataHandler(DataHandler):
     """
     This class provides historical data that was downloaded and/or
-    obtained in Excel/CSV format. Probably will not be used beyong
+    obtained in Excel/CSV format. Probably will not be used beyond
     the tutorial stage and will be removed. Or not.
     
     Additionally, the class obtains the latest bar in a manner identical
@@ -95,7 +98,8 @@ class HistoricCSVDataHandler(DataHandler):
         for bar in self.symbol_data[symbol]:
             # TODO: fix the format according to yahoo finance format.
             yield tuple([symbol, datetime.datetime.strptime(bar[0],
-                "Y-%m-%d %H:%M:%S"), bar[1][0], b[1][1], b[1][2], b[1][3], b[1][4]]) 
+                "Y-%m-%d %H:%M:%S"), bar[1][0], bar[1][1], bar[1][2],
+                bar[1][3], bar[1][4]]) 
             
     def get_latest_bars(self, symbol: str, n_bars=1) -> list:
         """
@@ -103,23 +107,34 @@ class HistoricCSVDataHandler(DataHandler):
         the get_new_bar() method thanks to the yield keyword.
         """
         bars_list = None
-        # Note, the tutorial used try/except. Consider using idiomatic python.
-        if symbol in self.latest_symbol_data.keys():
-            bars_list = self.latest_symbol_data[symbol]
+        # NOTE: Tutorial used try/except/else just like in the next function.
+        if symbol in self.symbol_data.keys():
+            bars_list = self.symbol_data[symbol]
         else:
             print("The %s symbol is not in the historical dataset." % symbol)
-        return bars_list
+        return bars_list[-n_bars:]
 
     def update_bars(self):
-        # TODO
-        pass
-
+        """
+        Pushed the latest bar into symbol_data structure for all
+        existing symbols in the structure.
+        """
+        # TODO: Come back later and explain this to yourself.
+        for s in self.symbol_list:
+            try:
+                bar = self.get_new_bar().next()
+            except StopIteration:
+                self.continue_backtest = False
+            else:
+                if bar is not None:
+                    self.symbol_data[s].append(bar)
+        self.events.put(MarketEvent())
 
 class HistoricDBDataHandler(DataHandler):
     """
     This class provides historical data through various SQL connections
     and, eventually, local database with high-quality data that was
-    collected live recently. Possible MariaDB or MySQL.
+    collected live recently. Possibly MariaDB or MySQL.
     """
     pass
 

@@ -90,8 +90,7 @@ class FillEvent(Event):
                  fill_cost: int, commission: float) -> None:
         """
         Initializes the FillEvent object. If commision is not provided, it will
-        be calculated based on the trade size and IB fees. I will probably be
-        using Interactive Brokers API once I go live.
+        be calculated based on the trade size and trading API fees.
 
         Args:
             timeindex: the bar-resolution when the order was filled.
@@ -117,19 +116,14 @@ class FillEvent(Event):
     def calculate_commission(self) -> float:
         """
         Calculates commission fees of the order based on the trade size,
-        the API, and other factors. Keep in mind, once the system goes
-        live the commission fees function (this function) will have to 
-        be adjusted in accordance to the up-to-date information on the
-        API's website. Right now it is taken from the tutorial.
+        the API, and other factors. Needs to be adjusted accordingly when
+        the system goes live in accordance with the API documentation.
 
         Based on "US API Directed Orders":
         https://www.interactivebrokers.com/en/index.php?f=commission&p=stocks2
         """
-        full_cost = 1.3
-        if self.quantity <= 500:
-            full_cost = max(1.3, 0.013 * self.quantity)
-        else:  # Greater than 500, make it a ternary later.
-            full_cost = max(1.3, 0.008 * self.quantity)
+        coeff_cost = 0.013 if self.quantity <= 500 else 0.008
+        full_cost = max(1.3, coeff_cost * self.quantity)
         full_cost = min(full_cost, 0.5 / 100.0 * self.quantity * self.fill_cost)
         
         return full_cost
